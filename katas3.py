@@ -21,7 +21,7 @@ def fetch_bls_data(series_ids, start_year, end_year):
     }
 
     # 2. Retry Logic with Exponential Backoff
-    max_retries = 5
+    max_retries = 6
     for attempt in range(max_retries):
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=10)
@@ -70,4 +70,5 @@ if __name__ == "__main__":
     # Pagination Note: BLS limits to 20 years per request. 
     # If your range is larger, you'd loop through year chunks here.
     data = fetch_bls_data(['CUUR0000SA0', 'SUUR0000SA0'], 2011, 2014)
+
     process_results(data)
