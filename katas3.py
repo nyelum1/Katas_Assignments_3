@@ -22,6 +22,7 @@ def fetch_bls_data(series_ids, start_year, end_year):
 
     # Retry Logic with Exponential Backoff
     max_retries = 5
+
     for attempt in range(max_retries):
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=10)
