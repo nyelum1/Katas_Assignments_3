@@ -20,22 +20,27 @@ def fetch_bls_data(series_ids, start_year, end_year):
         "registrationkey": API_KEY
     }
 
-    # 2. Retry Logic with Exponential Backoff
-    max_retries = 6
+    # Retry Logic with Exponential Backoff
+    max_retries = 5
+
     for attempt in range(max_retries):
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=10)
             
-            # 3. Handle HTTP Errors (4xx/5xx)
+            # Triggers the 'except' block if status is 4xx or 5xx
             response.raise_for_status()
+            
+            # If successful, return the data immediately
             return response.json()
 
         except requests.exceptions.RequestException as e:
-            wait_time = 2 ** attempt  # 2, 4, 8, 16 seconds
-            print(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time}s...")
-            time.sleep(wait_time)
+            wait_time = 2 ** attempt  # 1, 2, 4, 8, 16 seconds
+            print(f"Current wait time: {wait_time}s")
+            print(f"Attempt {attempt + 1} failed: {e}. Retrying...")
             
-            if attempt == max_retries - 1:
+            if attempt < max_retries - 1:
+                time.sleep(wait_time)
+            else:
                 print("Max retries reached. Skipping this batch.")
                 return None
 
